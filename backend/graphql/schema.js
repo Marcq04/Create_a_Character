@@ -32,6 +32,29 @@ const typeDefs = gql`
         updated_at: Date!
     }
 
+    type Bounty {
+        id: ID!
+        character: Character!
+        client: User!
+        description: String
+        deadline: Date!
+        aiAllowed: Boolean!
+        isCompleted: Boolean!
+        winner: Submission
+        created_at: Date!
+        updated_at: Date!
+    }
+
+    type Submission {
+        id: ID!
+        bounty: Bounty!
+        artist: User!
+        imageUrl: String!
+        isWinner: Boolean!
+        submittedAt: Date!
+    }
+
+
     type AuthPayload {
         token: String!
         user: User!
@@ -41,6 +64,10 @@ const typeDefs = gql`
         me: User
         getCharacters: [Character]
         getCharacterById(id: ID!): Character
+
+        getBounties: [Bounty]
+        getBountyById(id: ID!): Bounty
+        getSubmissionsByBounty(bountyId: ID!): [Submission]
     }
 
     type Mutation {
@@ -77,6 +104,23 @@ const typeDefs = gql`
             appearance: String
         ): Character
         deleteCharacter(id: ID!): Character
+
+        createBounty(
+            character: ID!,
+            description: String,
+            deadline: Date!,
+            aiAllowed: Boolean!
+        ): Bounty
+
+        submitArt(
+            bountyId: ID!,
+            imageUrl: String!
+        ): Submission
+
+        chooseSubmissionWinner(
+            bountyId: ID!,
+            submissionId: ID!
+        ): Bounty
     }
 `;
 

@@ -1,5 +1,7 @@
 const Character = require('../models/character');
 const User = require('../models/user');
+const Bounty = require('../models/bounty');
+const Submission = require('../models/submission');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const { GraphQLScalarType, Kind } = require('graphql');
@@ -68,7 +70,33 @@ const resolvers = {
                 console.error(error);
                 throw new Error('Failed to fetch character');
             }
-        }
+        },
+        getBounties: async () => {
+            try {
+                return await Bounty.find().populate('character client winner');
+            } catch (err) {
+                console.error(err);
+                throw new Error('Failed to fetch bounties');
+            }
+        },
+        
+        getBountyById: async (_, { id }) => {
+            try {
+                return await Bounty.findById(id).populate('character client winner');
+            } catch (err) {
+                console.error(err);
+                throw new Error('Failed to fetch bounty');
+            }
+        },
+        
+        getSubmissionsByBounty: async (_, { bountyId }) => {
+            try {
+                return await Submission.find({ bounty: bountyId }).populate('artist');
+            } catch (err) {
+                console.error(err);
+                throw new Error('Failed to fetch submissions');
+            }
+        }        
     },
     Mutation: {
         signupUser: async (_, { username, email, password }) => {
@@ -136,7 +164,7 @@ const resolvers = {
         
                 // Update only the fields that are actually provided
                 Object.keys(updates).forEach(key => {
-                    if (updates[key] !== undefined) {
+                    if (Object.prototype.hasOwnProperty.call(updates, key)) {
                         character[key] = updates[key];
                     }
                 });
@@ -168,8 +196,114 @@ const resolvers = {
                 console.error(error);
                 throw new Error('Failed to delete character');
             }
-        }
+        },
+
+        createBounty: async (_, { character, description, deadline, aiAllowed }, context) => {
+            try {
+                const user = await authMiddleware(context);
         
+                // Check if character exists
+                const characterDoc = await Character.findById(character);
+                if (!characterDoc) throw new Error('Character not found');
+        
+                const bounty = new Bounty({
+                    character,
+                    client: user._id,
+                    description,
+                    deadline,
+                    aiAllowed,
+                    isCompleted: false
+                });
+        
+                await bounty.save();
+                return await Bounty.findById(bounty._id).populate('character client winner');
+            } catch (err) {
+                console.error(err);
+                throw new Error('Failed to create bounty');
+            }
+        },        
+        
+        submitArt: async (_, { bountyId, imageUrl }, context) => {
+            try {
+                const user = await authMiddleware(context);
+        
+                const bounty = await Bounty.findById(bountyId);
+                if (!bounty || bounty.isCompleted) {
+                    throw new Error('Bounty not found or already completed');
+                }
+        
+                const submission = new Submission({
+                    bounty: bountyId,
+                    artist: user._id,
+                    imageUrl,
+                    isWinner: false
+                });
+        
+                await submission.save();
+                return await Submission.findById(submission._id)
+                    .populate({
+                        path: 'bounty',
+                        select: '_id description',
+                    })
+                    .populate({
+                        path: 'artist',
+                        select: '_id username',
+                    });
+            } catch (err) {
+                console.error(err);
+                throw new Error('Failed to submit art');
+            }
+        },
+        
+        chooseSubmissionWinner: async (_, { bountyId, submissionId }, context) => {
+            try {
+                const user = await authMiddleware(context);
+        
+                const bounty = await Bounty.findById(bountyId);
+                if (!bounty) throw new Error('Bounty not found');
+        
+                // Check if bounty is already completed
+                if (bounty.isCompleted) {
+                    throw new Error('Bounty is already completed');
+                }
+        
+                if (bounty.client.toString() !== user._id.toString()) {
+                    throw new Error('Unauthorized');
+                }
+        
+                const submission = await Submission.findById(submissionId);
+                if (!submission || submission.bounty.toString() !== bountyId) {
+                    throw new Error('Submission not found or does not match bounty');
+                }
+        
+                submission.isWinner = true;
+                await submission.save();
+        
+                bounty.winner = submission._id;
+                bounty.isCompleted = true;
+                await bounty.save();
+        
+                // Add honor point to the winning artist
+                const artist = await User.findById(submission.artist);
+                if (artist) {
+                    artist.honor += 1;
+                    await artist.save();
+                }
+        
+                return await Bounty.findById(bounty._id)
+                    .populate({
+                        path: 'winner',
+                        populate: {
+                            path: 'artist',
+                            select: '_id username'
+                        }
+                    })
+                    .populate('character client'); // Optional extras
+            } catch (err) {
+                console.error(err);
+                throw new Error('Failed to choose winner');
+            }
+        }         
     }
 };
 
