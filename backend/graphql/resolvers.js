@@ -4,6 +4,7 @@ const Bounty = require('../models/bounty');
 const Submission = require('../models/submission');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
+const { getTitleByHonor } = require('../utils/titleHelper');
 const { GraphQLScalarType, Kind } = require('graphql');
 
 // Middleware to check if the user is authenticated
@@ -96,7 +97,26 @@ const resolvers = {
                 console.error(err);
                 throw new Error('Failed to fetch submissions');
             }
-        }        
+        },
+        
+        getUserById: async (_, { id }) => {
+            const user = await User.findById(id).select('username honor created_at');
+            if (!user) {
+                throw new Error('User not found');
+            }
+            return user;
+        },
+        getLeaderboard: async (_, { limit = 10 }) => {
+            try {
+              return await User.find()
+                .sort({ honor: -1 })
+                .limit(limit)
+                .select('_id username honor title role')
+            } catch (error) {
+              console.error('❌ Failed to fetch leaderboard:', error);
+              throw new Error('Failed to fetch leaderboard');
+            }
+          }          
     },
     Mutation: {
         signupUser: async (_, { username, email, password }) => {
@@ -238,7 +258,7 @@ const resolvers = {
                     imageUrl,
                     isWinner: false
                 });
-        
+
                 await submission.save();
                 return await Submission.findById(submission._id)
                     .populate({
@@ -287,6 +307,7 @@ const resolvers = {
                 const artist = await User.findById(submission.artist);
                 if (artist) {
                     artist.honor += 1;
+                    artist.title = getTitleByHonor(artist.honor);
                     await artist.save();
                 }
         
@@ -303,7 +324,7 @@ const resolvers = {
                 console.error(err);
                 throw new Error('Failed to choose winner');
             }
-        }         
+        }          
     }
 };
 

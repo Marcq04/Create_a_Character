@@ -5,6 +5,7 @@ const userSchema = new mongoose.Schema({
     email:    { type: String, unique: true, required: true },
     password: { type: String, required: true },
     honor:    { type: Number, default: 0 }, // optional: track points
+    title:    { type: String, default: 'Newbie' },
     role:     { type: String, enum: ['user', 'admin'], default: 'user' }, // optional: for admins later
     created_at: { type: Date, default: Date.now },
     updated_at: { type: Date, default: Date.now }

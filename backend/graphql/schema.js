@@ -8,6 +8,7 @@ const typeDefs = gql`
         username: String!
         email: String!
         honor: Int!
+        title: String!
         role: String!
         created_at: Date!
         updated_at: Date!
@@ -68,6 +69,8 @@ const typeDefs = gql`
         getBounties: [Bounty]
         getBountyById(id: ID!): Bounty
         getSubmissionsByBounty(bountyId: ID!): [Submission]
+        getLeaderboard(limit: Int): [User]
+        getUserById(id: ID!): User
     }
 
     type Mutation {
