@@ -2,6 +2,8 @@ const Character = require('../models/character');
 const User = require('../models/user');
 const Bounty = require('../models/bounty');
 const Submission = require('../models/submission');
+const Like = require('../models/like');
+const Comment = require('../models/comment');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const { getTitleByHonor } = require('../utils/titleHelper');
@@ -100,7 +102,7 @@ const resolvers = {
         },
         
         getUserById: async (_, { id }) => {
-            const user = await User.findById(id).select('username honor created_at');
+            const user = await User.findById(id).select('_id username honor title role created_at updated_at');
             if (!user) {
                 throw new Error('User not found');
             }
@@ -116,13 +118,26 @@ const resolvers = {
               console.error('❌ Failed to fetch leaderboard:', error);
               throw new Error('Failed to fetch leaderboard');
             }
-          }          
+        },
+        getAcceptedSubmissionsByUser: async (_, { userId }) => {
+            return Submission.find({ artist: userId, isWinner: true });
+        },
+        getLikes: async (_, { submissionId }) => {
+            return Like.find({ submission: submissionId }).populate('user');
+        },
+        getComments: async (_, { submissionId }) => {
+            return Comment.find({ submission: submissionId }).populate('user');
+        },                             
     },
+    User: {
+        characters: async (parent) => Character.find({ owner: parent._id }),
+        submissions: async (parent) => Submission.find({ artist: parent._id, isWinner: true }),
+    }, 
     Mutation: {
         signupUser: async (_, { username, email, password }) => {
             try {
                 const hashedPassword = await bcrypt.hash(password, 10);
-                const user = new User({ username, email, password: hashedPassword });
+                const user = new User({ username, email, password: hashedPassword, title: getTitleByHonor(0) });
                 await user.save();
                 const token = jwt.sign(
                     { userId: user._id },
@@ -324,7 +339,72 @@ const resolvers = {
                 console.error(err);
                 throw new Error('Failed to choose winner');
             }
-        }          
+        },
+        
+        likeSubmission: async (_, { submissionId }, context) => {
+            const user = await authMiddleware(context);
+        
+            const alreadyLiked = await Like.findOne({
+                user: user._id,
+                submission: submissionId
+            }).populate('user');            
+        
+            if (alreadyLiked) {
+                return alreadyLiked;
+            }
+        
+            const like = new Like({
+                user: user._id,
+                submission: submissionId
+            });
+        
+            await like.save();
+            return await Like.findById(like._id).populate('user');
+        },
+        
+        unlikeSubmission: async (_, { submissionId }, context) => {
+            const user = await authMiddleware(context);
+        
+            const result = await Like.findOneAndDelete({
+                user: user._id,
+                targetType: 'Submission',
+                targetId: submissionId
+            }).populate('user');            
+        
+            return !! result;
+        },        
+        
+        addComment: async (_, { submissionId, content }, context) => {
+            const user = await authMiddleware(context);
+        
+            const comment = new Comment({
+                user: user._id,
+                submission: submissionId,
+                content
+            });            
+        
+            await comment.save();
+            return await Comment.findById(comment._id).populate('user');
+        },        
+
+        deleteComment: async (_, { commentId }, context) => {
+            try {
+                const user = await authMiddleware(context);
+        
+                const comment = await Comment.findById(commentId);
+                if (!comment) throw new Error('Comment not found');
+        
+                if (comment.user.toString() !== user._id.toString()) {
+                    throw new Error('Unauthorized');
+                }
+        
+                await Comment.findByIdAndDelete(commentId);
+                return true;
+            } catch (err) {
+                console.error(err);
+                throw new Error('Failed to delete comment');
+            }
+        }
     }
 };
 

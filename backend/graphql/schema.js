@@ -12,6 +12,8 @@ const typeDefs = gql`
         role: String!
         created_at: Date!
         updated_at: Date!
+        characters: [Character]
+        submissions: [Submission]
     }
 
     type Character {
@@ -55,6 +57,20 @@ const typeDefs = gql`
         submittedAt: Date!
     }
 
+    type Like {
+        id: ID!
+        user: User!
+        submission: Submission!
+        createdAt: Date!
+    }
+
+    type Comment {
+        id: ID!
+        user: User!
+        submission: Submission!
+        content: String!
+        createdAt: Date!
+    }
 
     type AuthPayload {
         token: String!
@@ -71,6 +87,9 @@ const typeDefs = gql`
         getSubmissionsByBounty(bountyId: ID!): [Submission]
         getLeaderboard(limit: Int): [User]
         getUserById(id: ID!): User
+        getAcceptedSubmissionsByUser(userId: ID!): [Submission]
+        getLikes(submissionId: ID!): [Like]
+        getComments(submissionId: ID!): [Comment]
     }
 
     type Mutation {
@@ -124,8 +143,12 @@ const typeDefs = gql`
             bountyId: ID!,
             submissionId: ID!
         ): Bounty
+
+        likeSubmission(submissionId: ID!): Like
+        unlikeSubmission(submissionId: ID!): Boolean
+        addComment(submissionId: ID!, content: String!): Comment
+        deleteComment(commentId: ID!): Boolean
     }
 `;
 
 module.exports = { typeDefs };
-
