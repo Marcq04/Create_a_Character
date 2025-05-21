@@ -234,29 +234,36 @@ const resolvers = {
         },
 
         createBounty: async (_, { character, description, deadline, aiAllowed }, context) => {
-            try {
-                const user = await authMiddleware(context);
-        
-                // Check if character exists
-                const characterDoc = await Character.findById(character);
-                if (!characterDoc) throw new Error('Character not found');
-        
-                const bounty = new Bounty({
-                    character,
-                    client: user._id,
-                    description,
-                    deadline,
-                    aiAllowed,
-                    isCompleted: false
-                });
-        
-                await bounty.save();
-                return await Bounty.findById(bounty._id).populate('character client winner');
-            } catch (err) {
-                console.error(err);
-                throw new Error('Failed to create bounty');
+            const user = await authMiddleware(context);
+
+            // Validate character ownership
+            const characterDoc = await Character.findById(character);
+            if (!characterDoc) throw new Error('Character not found');
+
+            // Auto-delete logic for old completed bounties
+            const completedBounties = await Bounty.find({ client: user._id, isCompleted: true })
+                .sort({ created_at: 1 }); // oldest first
+
+            if (completedBounties.length >= 3) {
+                const bountyToDelete = completedBounties[0];
+                await Bounty.findByIdAndDelete(bountyToDelete._id);
+                // Optional: also delete submissions tied to that bounty
+                await Submission.deleteMany({ bounty: bountyToDelete._id });
             }
-        },        
+
+            
+            const bounty = new Bounty({
+                character,
+                client: user._id,
+                description,
+                deadline,
+                aiAllowed,
+                isCompleted: false
+            });
+
+            await bounty.save();
+            return await Bounty.findById(bounty._id).populate('character client winner');
+        },
         
         submitArt: async (_, { bountyId, imageUrl }, context) => {
             try {
@@ -338,6 +345,36 @@ const resolvers = {
             } catch (err) {
                 console.error(err);
                 throw new Error('Failed to choose winner');
+            }
+        },
+
+        deleteBounty: async (_, { bountyId }, context) => {
+            try {
+                const user = await authMiddleware(context);
+
+                const bounty = await Bounty.findById(bountyId);
+                if (!bounty) throw new Error('Bounty not found');
+
+                if (bounty.client.toString() !== user._id.toString()) {
+                    throw new Error('Unauthorized');
+                }
+
+                // Get all submissions related to this bounty
+                const submissions = await Submission.find({ bounty: bountyId });
+
+                // Delete related likes and comments for each submission
+                for (const submission of submissions) {
+                    await Like.deleteMany({ submission: submission._id });
+                    await Comment.deleteMany({ submission: submission._id });
+                    await Submission.findByIdAndDelete(submission._id);
+                }
+
+                // Delete the bounty itself
+                await Bounty.findByIdAndDelete(bountyId);
+                return true;
+            } catch (err) {
+                console.error(err);
+                throw new Error('Failed to delete bounty');
             }
         },
         

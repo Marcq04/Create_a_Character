@@ -144,6 +144,8 @@ const typeDefs = gql`
             submissionId: ID!
         ): Bounty
 
+        deleteBounty(bountyId: ID!): Boolean
+
         likeSubmission(submissionId: ID!): Like
         unlikeSubmission(submissionId: ID!): Boolean
         addComment(submissionId: ID!, content: String!): Comment
