@@ -300,6 +300,7 @@ const resolvers = {
         chooseSubmissionWinner: async (_, { bountyId, submissionId }, context) => {
             try {
                 const user = await authMiddleware(context);
+                const { getTitleByHonor } = require('../utils/getTitleByHonor');
         
                 const bounty = await Bounty.findById(bountyId);
                 if (!bounty) throw new Error('Bounty not found');
