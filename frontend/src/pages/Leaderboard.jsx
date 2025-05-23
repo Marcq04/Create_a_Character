@@ -26,7 +26,7 @@ const Leaderboard = () => {
                 }
               }
             `,
-            variables: { limit: 1 },
+            variables: { limit: 10 },
           }),
         });
 
