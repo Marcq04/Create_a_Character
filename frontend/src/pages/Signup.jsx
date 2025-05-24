@@ -1,24 +1,12 @@
-import { gql, useMutation } from '@apollo/client';
+import { useMutation } from '@apollo/client';
 import { useNavigate } from 'react-router-dom';
 import { useState } from 'react';
-
-const SIGNUP_MUTATION = gql`
-  mutation Signup($username: String!, $email: String!, $password: String!) {
-    signupUser(username: $username, email: $email, password: $password) {
-      token
-      user {
-        id
-        username
-        email
-      }
-    }
-  }
-`;
+import { SIGNUP_USER } from '../graphql/mutations';
 
 const Signup = () => {
   const navigate = useNavigate();
   const [formData, setFormData] = useState({ username: '', email: '', password: '' });
-  const [signupUser, { loading, error }] = useMutation(SIGNUP_MUTATION, {
+  const [signupUser, { loading, error }] = useMutation(SIGNUP_USER, {
     onCompleted: (data) => {
       localStorage.setItem('token', data.signupUser.token);
       navigate('/login'); // Redirect to login after signup

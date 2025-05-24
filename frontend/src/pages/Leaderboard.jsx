@@ -1,46 +1,12 @@
 import { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import { useQuery, gql } from '@apollo/client';
+import { GET_LEADERBOARD } from '../graphql/queries';
 
 const Leaderboard = () => {
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-  const [data, setData] = useState(null);
-
-  useEffect(() => {
-    const fetchLeaderboard = async () => {
-      try {
-        const response = await fetch(import.meta.env.VITE_API_URL, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${localStorage.getItem('token') || ''}`,
-          },
-          body: JSON.stringify({
-            query: `
-              query GetLeaderboard($limit: Int!) {
-                getLeaderboard(limit: $limit) {
-                  id
-                  username
-                  honor
-                  title
-                }
-              }
-            `,
-            variables: { limit: 10 },
-          }),
-        });
-
-        const result = await response.json();
-        setData(result.data);
-      } catch (error) {
-        setError(error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchLeaderboard();
-  }, []);
+  const { loading, error, data } = useQuery(GET_LEADERBOARD, {
+    variables: { limit: 10 },
+  });
 
   if (loading) return <p>Loading leaderboard...</p>;
   if (error) return <p>Error loading leaderboard: {error.message}</p>;
