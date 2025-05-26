@@ -127,7 +127,31 @@ const resolvers = {
         },
         getComments: async (_, { submissionId }) => {
             return Comment.find({ submission: submissionId }).populate('user');
-        },                             
+        },
+        getUserCharacters: async (_, __, context) => {
+            const user = await authMiddleware(context);
+            return Character.find({ owner: user._id });
+        },
+
+        getUserBounties: async (_, __, context) => {
+            const user = await authMiddleware(context);
+            return Bounty.find({ client: user._id });
+        },
+
+        getUserSubmissions: async (_, __, context) => {
+            const user = await authMiddleware(context);
+            return Submission.find({ artist: user._id });
+        },
+
+        getUserLikes: async (_, __, context) => {
+            const user = await authMiddleware(context);
+            return Like.find({ user: user._id }).populate('submission');
+        },
+
+        getUserComments: async (_, __, context) => {
+            const user = await authMiddleware(context);
+            return Comment.find({ user: user._id }).populate('submission');
+        }                    
     },
     User: {
         characters: async (parent) => Character.find({ owner: parent._id }),
