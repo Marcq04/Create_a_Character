@@ -349,6 +349,29 @@ const resolvers = {
             }
         },
 
+        updateBounty: async (_, { bountyId, description, deadline, aiAllowed }, context) => {
+            try {
+                const user = await authMiddleware(context);
+        
+                const bounty = await Bounty.findById(bountyId);
+                if (!bounty) throw new Error('Bounty not found');
+        
+                if (bounty.client.toString() !== user._id.toString()) {
+                    throw new Error('Unauthorized');
+                }
+        
+                bounty.description = description;
+                bounty.deadline = deadline;
+                bounty.aiAllowed = aiAllowed;
+                await bounty.save();
+        
+                return await Bounty.findById(bounty._id).populate('character client winner');
+            } catch (err) {
+                console.error(err);
+                throw new Error('Failed to update bounty');
+            }
+        },
+
         deleteBounty: async (_, { bountyId }, context) => {
             try {
                 const user = await authMiddleware(context);

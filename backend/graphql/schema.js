@@ -144,6 +144,13 @@ const typeDefs = gql`
             submissionId: ID!
         ): Bounty
 
+        updateBounty(
+            bountyId: ID!,
+            description: String,
+            deadline: Date!,
+            aiAllowed: Boolean!
+        ): Bounty
+
         deleteBounty(bountyId: ID!): Boolean
 
         likeSubmission(submissionId: ID!): Like
