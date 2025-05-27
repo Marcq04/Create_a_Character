@@ -1,85 +1,88 @@
-import { useQuery, useMutation } from '@apollo/client';
-import { useNavigate } from 'react-router-dom';
-import { useState } from 'react';
-import { GET_USER_BOUNTIES } from '../../graphql/queries';
-import { UPDATE_BOUNTY } from '../../graphql/mutations';
+import { useParams, useNavigate } from "react-router-dom";
+import { useQuery, useMutation } from "@apollo/client";
+import { useState, useEffect } from "react";
+import { UPDATE_BOUNTY } from "../../graphql/mutations";
+import { GET_BOUNTY_BY_ID } from "../../graphql/queries";
 
-const isValidObjectId = (id) => /^[a-f\d]{24}$/i.test(id);
-
-const UpdateBounties = () => {
-  const [bountyId, setBountyId] = useState('');
-  const [selectedBounty, setSelectedBounty] = useState(null);
-  const [description, setDescription] = useState('');
-  const [deadline, setDeadline] = useState('');
-  const [aiAllowed, setAiAllowed] = useState(false);
-
+const Update_Bounties = () => {
+  const { id } = useParams();
   const navigate = useNavigate();
-  const { data: userBounties, loading: bountiesLoading } = useQuery(GET_USER_BOUNTIES);
-  const [updateBounty, { loading: updating, error }] = useMutation(UPDATE_BOUNTY, {
-    onCompleted: () => navigate('/bounties'),
+  const { data, loading, error } = useQuery(GET_BOUNTY_BY_ID, {
+    variables: { id },
   });
+  const [updateBounty, { loading: updateLoading, error: updateError }] =
+    useMutation(UPDATE_BOUNTY);
+  const [description, setDescription] = useState(data?.getBountyById.description);
+  const [deadline, setDeadline] = useState(data?.getBountyById.deadline);
+  const [aiAllowed, setAiAllowed] = useState(data?.getBountyById.aiAllowed);
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    if (!selectedBounty || !isValidObjectId(selectedBounty._id)) {
-      alert('Please select a valid bounty');
-      return;
+  useEffect(() => {
+    if (data) {
+      setDescription(data.getBountyById.description);
+      setDeadline(data.getBountyById.deadline);
+      setAiAllowed(data.getBountyById.aiAllowed);
     }
-    updateBounty({
-      variables: {
-        bountyId: selectedBounty._id,
-        description,
-        deadline: new Date(deadline).toISOString(),
-        aiAllowed,
-      },
-    });
+  }, [data]);
+
+  if (loading) return <p>Loading...</p>;
+
+  if (error) {
+    console.error(error);
+    return <p>Error loading bounty</p>;
+  }
+
+  if (!data || !data.getBountyById) {
+    console.log("No bounty found");
+    return <p>No bounty found</p>;
+  }
+
+  const handleUpdate = async () => {
+    try {
+      await updateBounty({
+        variables: {
+          bountyId: id,
+          description,
+          deadline,
+          aiAllowed,
+        },
+      });
+      navigate("/bounties");
+    } catch (error) {
+      console.error(error);
+    }
   };
 
   return (
     <div>
       <h2>Update Bounty</h2>
-      <form onSubmit={handleSubmit}>
-        <select
-          value={bountyId}
-          onChange={(e) => setBountyId(e.target.value)}
-          required
-        >
-          <option value="">Select a bounty</option>
-          {!bountiesLoading &&
-            userBounties.getUserBounties.map((bounty) => (
-              <option key={bounty._id} value={bounty._id}>
-                {bounty.description}
-              </option>
-            ))}
-        </select>
+      <div>
+        <label>Description:</label>
         <input
           type="text"
-          placeholder="Description"
           value={description}
           onChange={(e) => setDescription(e.target.value)}
         />
+      </div>
+      <div>
+        <label>Deadline:</label>
         <input
           type="date"
           value={deadline}
           onChange={(e) => setDeadline(e.target.value)}
-          min={new Date().toISOString().split('T')[0]}
-          required
         />
+      </div>
+      <div>
+        <label>AI Allowed:</label>
         <input
           type="checkbox"
           checked={aiAllowed}
-          onChange={() => setAiAllowed(!aiAllowed)}
+          onChange={(e) => setAiAllowed(e.target.checked)}
         />
-        <label>AI Allowed</label>
-        <button type="submit" disabled={updating || bountiesLoading}>
-          {updating ? 'Updating...' : 'Update Bounty'}
-        </button>
-        <button onClick={() => navigate('/bounties')}>Back to Bounties</button>
-      </form>
-      {error && <p>Error: {error.message}</p>}
+      </div>
+      <button onClick={handleUpdate}>Update</button>
+      <button onClick={() => navigate("/bounties")}>Back to Bounties</button>
     </div>
   );
 };
 
-export default UpdateBounties;
-
+export default Update_Bounties;

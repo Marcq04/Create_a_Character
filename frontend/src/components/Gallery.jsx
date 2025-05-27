@@ -22,7 +22,8 @@ export const BountyGallery = ({ bounties }) => (
         {bounties.map(bounty => (
             <Link key={bounty._id} to={`/bounties/${bounty._id}`}>
                 <BountyCard
-                    title={bounty.title}
+                    character={bounty.character}
+                    client={bounty.client}
                     description={bounty.description}
                     deadline={bounty.deadline}
                     imageUrl={bounty.imageUrl}

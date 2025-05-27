@@ -10,6 +10,9 @@ export const GET_BOUNTIES = gql`
       character {
         name
       }
+      client {
+        username
+      }
     }
   }
 `;
@@ -23,6 +26,17 @@ export const GET_BOUNTY_BY_ID = gql`
       aiAllowed
       character {
         name
+        nickname
+        age
+        gender
+        origin
+        background
+        goal
+        weakness
+        personality
+        powers
+        skills
+        appearance
       }
       client {
         username
@@ -91,12 +105,13 @@ export const GET_USER_BOUNTIES = gql`
   query GetUserBounties {
     getUserBounties {
       id
+      character {
+        name
+        nickname
+      }
       description
       deadline
       aiAllowed
-      character {
-        name
-      }
     }
   }
 `;

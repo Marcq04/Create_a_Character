@@ -6,7 +6,7 @@ import { DELETE_BOUNTY } from '../../graphql/mutations';
 const Bounties = () => {
   const navigate = useNavigate();
   const { data, loading, error, refetch } = useQuery(GET_USER_BOUNTIES);
-  const [deleteBounty] = useMutation(DELETE_BOUNTY, {
+  const [deleteBounty, { error: deleteError }] = useMutation(DELETE_BOUNTY, {
     onCompleted: () => refetch(),
   });
 
@@ -15,6 +15,11 @@ const Bounties = () => {
   if (error) {
     console.error(error);
     return <p>Error loading bounties</p>;
+  }
+
+  if (deleteError) {
+    console.error(deleteError);
+    return <p>Error deleting bounty</p>;
   }
 
   if (!data || !data.getUserBounties) {
@@ -36,7 +41,8 @@ const Bounties = () => {
       <ul>
         {bounties.map(bounty => (
           <li key={bounty.id}>
-            {bounty.description} - {new Date(bounty.deadline).toDateString()}
+            {bounty.character.name} {bounty.description} - {new Date(bounty.deadline).toDateString()}
+            {bounty.aiAllowed && <span> (AI Allowed)</span>}
             <button onClick={() => navigate(`/update_bounties/${bounty.id}`)}>Update</button>
             <button onClick={() => handleDelete(bounty.id)}>Delete</button>
           </li>

@@ -201,11 +201,7 @@ export const UPDATE_BOUNTY = gql`
 
 export const DELETE_BOUNTY = gql`
   mutation DeleteBounty($bountyId: ID!) {
-    deleteBounty(bountyId: $bountyId) {
-      _id
-      description
-      deadline
-      aiAllowed
-    }
+    deleteBounty(bountyId: $bountyId)
   }
 `;
+
