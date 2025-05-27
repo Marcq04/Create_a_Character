@@ -18,12 +18,17 @@ const Login = () => {
     loginUser({ variables: formData });
   };
 
+  const handleSignupRoute = () => {
+    navigate('/');
+  };
+
   return (
     <form onSubmit={handleSubmit}>
       <input type="email" placeholder="Email" onChange={(e) => setFormData({ ...formData, email: e.target.value })} />
       <input type="password" placeholder="Password" onChange={(e) => setFormData({ ...formData, password: e.target.value })} />
       <button type="submit" disabled={loading}>Log In</button>
       {error && <p>Error: {error.message}</p>}
+      <button type="button" onClick={handleSignupRoute}>Need an account? Sign up</button>
     </form>
   );
 };

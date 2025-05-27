@@ -28,5 +28,6 @@ const SubmissionCard = ({ title, description, imageUrl, aiTag }) => {
   );
 };
 
+
 export { BountyCard, SubmissionCard };
 
