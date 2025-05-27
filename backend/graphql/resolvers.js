@@ -136,8 +136,12 @@ const resolvers = {
 
         getUserBounties: async (_, __, context) => {
             const user = await authMiddleware(context);
-            const bounties = await Bounty.find({ client: user._id }).populate('character client winner');
-            return Bounty.find({ client: user._id });
+            const bounties = await Bounty.find({ client: user._id })
+                .populate('character')
+                .populate('client')
+                .populate('winner');
+
+            return bounties.filter(bounty => bounty.character && bounty.character.name);
         },
 
         getUserSubmissions: async (_, __, context) => {
