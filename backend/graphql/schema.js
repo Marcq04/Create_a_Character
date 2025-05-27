@@ -90,11 +90,11 @@ const typeDefs = gql`
         getAcceptedSubmissionsByUser(userId: ID!): [Submission]
         getLikes(submissionId: ID!): [Like]
         getComments(submissionId: ID!): [Comment]
-        getUserCharacters(userId: ID!): [Character]
-        getUserBounties(userId: ID!): [Bounty]
-        getUserSubmissions(userId: ID!): [Submission]
-        getUserLikes(userId: ID!): [Like]
-        getUserComments(userId: ID!): [Comment]
+        getUserCharacters: [Character]
+        getUserBounties: [Bounty]
+        getUserSubmissions: [Submission]
+        getUserLikes: [Like]
+        getUserComments: [Comment]
     }
 
     type Mutation {
