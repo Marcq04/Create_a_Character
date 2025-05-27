@@ -76,7 +76,8 @@ const resolvers = {
         },
         getBounties: async () => {
             try {
-                return await Bounty.find().populate('character client winner');
+                const bounties = await Bounty.find().populate('character client winner');
+                return bounties.filter(bounty => bounty.character && bounty.character.name);
             } catch (err) {
                 console.error(err);
                 throw new Error('Failed to fetch bounties');
@@ -135,6 +136,7 @@ const resolvers = {
 
         getUserBounties: async (_, __, context) => {
             const user = await authMiddleware(context);
+            const bounties = await Bounty.find({ client: user._id }).populate('character client winner');
             return Bounty.find({ client: user._id });
         },
 
