@@ -251,12 +251,32 @@ const resolvers = {
                 if (!character) {
                     throw new Error('Character not found');
                 }
+
                 if (character.owner.toString() !== user._id.toString()) {
                     throw new Error('Unauthorized');
                 }
-                
+
+                // Find all bounties using this character
+                const bounties = await Bounty.find({ character: id });
+
+                for (const bounty of bounties) {
+                    // Delete related submissions, likes, and comments
+                    const submissions = await Submission.find({ bounty: bounty._id });
+
+                    for (const submission of submissions) {
+                        await Like.deleteMany({ submission: submission._id });
+                        await Comment.deleteMany({ submission: submission._id });
+                        await Submission.findByIdAndDelete(submission._id);
+                    }
+
+                    // Delete the bounty itself
+                    await Bounty.findByIdAndDelete(bounty._id);
+                }
+
+                // Delete the character
                 const deletedCharacter = await Character.findByIdAndDelete(id);
                 return deletedCharacter;
+
             } catch (error) {
                 console.error(error);
                 throw new Error('Failed to delete character');
