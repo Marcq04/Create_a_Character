@@ -10,6 +10,10 @@ import Bounties from './pages/bountyPages/Bounties';
 import Create_Bounties from './pages/bountyPages/Create_Bounties';
 import Update_Bounties from './pages/bountyPages/Update_Bounties';
 import Character_Details from './pages/characterPages/Character_Details';
+import Support from './pages/Support';
+import Profile from './pages/profilePages/Profile';
+import Community from './pages/Community';
+import UserProfile from './pages/profilePages/UserProfile';
 import './App.css';
 
 function App() {
@@ -27,6 +31,10 @@ function App() {
         <Route path="/create_bounties" element={<Create_Bounties />} />
         <Route path="/update_bounties/:id" element={<Update_Bounties />} />
         <Route path="/characters/:id" element={<Character_Details />} />
+        <Route path="/support" element={<Support />} />
+        <Route path="/profile" element={<Profile />} />
+        <Route path="/community" element={<Community />} />
+        <Route path="/profile/:id" element={<UserProfile />} />
       </Routes>
     </Router>
   );

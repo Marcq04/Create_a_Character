@@ -177,3 +177,62 @@ export const GET_USER_COMMENTS = gql`
     }
   }
 `;
+
+export const ME = gql`
+  query Me {
+    me {
+      id
+      username
+      email
+      honor
+      title
+      role
+      created_at
+      updated_at
+      characters {
+        id
+        name
+        appearance
+      }
+      submissions {
+        id
+        imageUrl
+      }
+    }
+  }
+`;
+
+export const GET_ALL_USERS = gql`
+  query GetAllUsers {
+    getAllUsers {
+      id
+      username
+      honor
+      title
+      role
+    }
+  }
+`;
+
+export const GET_USER_BY_ID = gql`
+  query GetUserById($id: ID!) {
+    getUserById(id: $id) {
+      id
+      username
+      honor
+      title
+      role
+      created_at
+      updated_at
+      characters {
+        id
+        name
+        appearance
+      }
+      submissions {
+        id
+        imageUrl
+      }
+    }
+  }
+`;

@@ -1,7 +1,7 @@
 import { useQuery, gql, useApolloClient } from '@apollo/client';
 import { useNavigate } from 'react-router-dom';
 import { Element } from 'react-scroll';
-import Navbar from '../../components/Navbar';
+import Navbar from '../../components/navbarLayout/Navbar';
 import Footer from '../../components/Footer';
 import { BountyGallery, SubmissionGallery } from '../../components/galleryLayout/Gallery';
 import { GET_BOUNTIES, GET_SUBMISSIONS } from '../../graphql/queries';

@@ -1,0 +1,29 @@
+.profile {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+}
+
+.profile h2 {
+  margin-bottom: 1rem;
+}
+
+.profile ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.profile li {
+  margin-bottom: 0.5rem;
+}
+
+.profile a {
+  text-decoration: none;
+  color: #333;
+}
+
+.profile a:hover {
+  text-decoration: underline;
+}
