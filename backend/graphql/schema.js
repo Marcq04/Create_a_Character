@@ -80,7 +80,6 @@ const typeDefs = gql`
     type Query {
         me: User
         getAllUsers: [User]
-        getUserById(id: ID!): User
         getCharacters: [Character]
         getCharacterById(id: ID!): Character
 
