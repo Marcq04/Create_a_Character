@@ -79,6 +79,7 @@ const typeDefs = gql`
 
     type Query {
         me: User
+        getAllUsers: [User]
         getCharacters: [Character]
         getCharacterById(id: ID!): Character
 

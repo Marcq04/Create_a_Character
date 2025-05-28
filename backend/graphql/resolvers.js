@@ -8,6 +8,7 @@ const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const { getTitleByHonor } = require('../utils/titleHelper');
 const { GraphQLScalarType, Kind } = require('graphql');
+const { get } = require('mongoose');
 
 // Middleware to check if the user is authenticated
 const authMiddleware = async (context) => {
@@ -157,6 +158,15 @@ const resolvers = {
         getUserComments: async (_, __, context) => {
             const user = await authMiddleware(context);
             return Comment.find({ user: user._id }).populate('submission');
+        },
+        getAllUsers: async () => {
+            try {
+                const users = await User.find().select('_id username honor title role');
+                return users;
+            } catch (error) {
+                console.error(error);
+                throw new Error('Failed to fetch users');
+            }
         }                    
     },
     User: {
