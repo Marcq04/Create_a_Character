@@ -167,6 +167,18 @@ const resolvers = {
                 console.error(error);
                 throw new Error('Failed to fetch users');
             }
+        },
+        getUserById: async (_, { id }) => {
+            try {
+                const user = await User.findById(id).select('_id username honor title role');
+                if (!user) {
+                    throw new Error('User not found');
+                }
+                return user;
+            } catch (error) {
+                console.error(error);
+                throw new Error('Failed to fetch user');
+            }
         }                    
     },
     User: {
