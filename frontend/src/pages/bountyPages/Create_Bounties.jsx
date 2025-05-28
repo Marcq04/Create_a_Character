@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useQuery, useMutation } from '@apollo/client';
 import { useNavigate } from 'react-router-dom';
 import { CREATE_BOUNTY } from '../../graphql/mutations';
-import { GET_USER_CHARACTERS } from '../../graphql/queries';
+import { GET_USER_CHARACTERS, GET_USER_BOUNTIES } from '../../graphql/queries';
 
 const CreateBounties = () => {
   const [selectedCharacter, setSelectedCharacter] = useState('');
@@ -12,6 +12,7 @@ const CreateBounties = () => {
 
   const navigate = useNavigate();
   const [createBounty, { loading, error }] = useMutation(CREATE_BOUNTY, {
+    refetchQueries: [{ query: GET_USER_BOUNTIES }],
     onCompleted: () => navigate('/bounties'),
   });
 
@@ -53,7 +54,7 @@ const CreateBounties = () => {
             {!characterLoading &&
               characterData &&
               characterData.getUserCharacters.map((character) => (
-                <option key={character._id} value={character._id}>
+                <option key={character._id} value={character.id}>
                   {character.name}
                 </option>
               ))}
