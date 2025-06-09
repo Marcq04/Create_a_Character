@@ -4,12 +4,12 @@ import { Element } from 'react-scroll';
 import Navbar from '../../components/navbarLayout/Navbar';
 import Footer from '../../components/Footer';
 import { BountyGallery, SubmissionGallery } from '../../components/galleryLayout/Gallery';
-import { GET_BOUNTIES, GET_SUBMISSIONS_BY_BOUNTY} from '../../graphql/queries';
+import { GET_BOUNTIES, GET_ACCEPTED_SUBMISSIONS } from '../../graphql/queries';
 import './Home.css';
 
 const Home = () => {
     const { data: bountiesData, loading: loadingBounties } = useQuery(GET_BOUNTIES);
-    const { data: submissionsData, loading: loadingSubmissions } = useQuery(GET_SUBMISSIONS_BY_BOUNTY);
+    const { data: submissionsData, loading: loadingSubmissions } = useQuery(GET_ACCEPTED_SUBMISSIONS);
     const client = useApolloClient();
     const navigate = useNavigate();
 

@@ -242,9 +242,15 @@ export const GET_ACCEPTED_SUBMISSIONS_BY_BOUNTY = gql`
     getAcceptedSubmissionsByBounty(bountyId: $bountyId) {
       id
       imageUrl
-      artist {
-        username
-      }
+    }
+  }
+`;
+
+export const GET_ACCEPTED_SUBMISSIONS = gql`
+  query GetAcceptedSubmissions {
+    getAcceptedSubmissions {
+      id
+      imageUrl
     }
   }
 `;

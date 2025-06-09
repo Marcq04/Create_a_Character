@@ -11,10 +11,12 @@ const Bounty_Details = () => {
         variables: { id },
     });
     const [imageUrl, setImageUrl] = useState('');
+    const [publicId, setPublicId] = useState('');
     const [submitArt] = useMutation(SUBMIT_ART, {
         onCompleted: () => {
             alert('Art submitted successfully!');
             setImageUrl('');
+            setPublicId('');
             navigate('/home');
         },
         onError: (error) => alert(`Error: ${error.message}`),
@@ -28,6 +30,7 @@ const Bounty_Details = () => {
         const widget = window.cloudinary.createUploadWidget({
             cloudName: 'dpbsmirhv',
             uploadPreset: 'create-a-character',
+            folder: 'submissions',
             sources: ['local', 'url'],
             showAdvancedOptions: false,
             cropping: true,
@@ -35,6 +38,7 @@ const Bounty_Details = () => {
         }, (error, result) => {
             if (result && result.event === 'success') {
                 setImageUrl(result.info.secure_url);
+                setPublicId(result.info.public_id);
             }
         });
         widget.open();
@@ -46,6 +50,7 @@ const Bounty_Details = () => {
                 variables: {
                     bountyId: id,
                     imageUrl,
+                    publicId,
                 },
             });
         } else {

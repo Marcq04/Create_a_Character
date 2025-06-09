@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { SubmissionCard, BountyCard } from '../cardLayout/Card';
 import './Gallery.css';
 
-export const SubmissionGallery = ({ submissions }) => (
+export const SubmissionGallery = ({ submissions = [] }) => (
     <div className="submission-gallery">
         {submissions.map(submission => (
             <Link key={submission._id} to={`/submissions/${submission.id}`}>
@@ -18,7 +18,7 @@ export const SubmissionGallery = ({ submissions }) => (
     </div>
 );
 
-export const BountyGallery = ({ bounties }) => (
+export const BountyGallery = ({ bounties = [] }) => (
     <div className="bounty-gallery">
         {bounties.map(bounty => (
             <Link key={bounty._id} to={`/bounties/${bounty.id}`}>
