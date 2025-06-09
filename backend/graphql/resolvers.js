@@ -334,7 +334,7 @@ const resolvers = {
             return await Bounty.findById(bounty._id).populate('character client winner');
         },
         
-        submitArt: async (_, { bountyId, imageUrl }, context) => {
+        submitArt: async (_, { bountyId, imageUrl, publicId }, context) => {
             try {
                 const user = await authMiddleware(context);
         
@@ -347,6 +347,7 @@ const resolvers = {
                     bounty: bountyId,
                     artist: user._id,
                     imageUrl,
+                    publicId,
                     isWinner: false
                 });
 

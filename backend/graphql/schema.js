@@ -53,6 +53,7 @@ const typeDefs = gql`
         bounty: Bounty!
         artist: User!
         imageUrl: String!
+        publicId: String
         isWinner: Boolean!
         submittedAt: Date!
     }
@@ -144,6 +145,7 @@ const typeDefs = gql`
         submitArt(
             bountyId: ID!,
             imageUrl: String!
+            publicId: String
         ): Submission
 
         chooseSubmissionWinner(
