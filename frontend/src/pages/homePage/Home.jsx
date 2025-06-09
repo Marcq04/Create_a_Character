@@ -4,11 +4,12 @@ import { Element } from 'react-scroll';
 import Navbar from '../../components/navbarLayout/Navbar';
 import Footer from '../../components/Footer';
 import { BountyGallery, SubmissionGallery } from '../../components/galleryLayout/Gallery';
-import { GET_BOUNTIES, GET_SUBMISSIONS } from '../../graphql/queries';
+import { GET_BOUNTIES, GET_SUBMISSIONS_BY_BOUNTY} from '../../graphql/queries';
 import './Home.css';
 
 const Home = () => {
     const { data: bountiesData, loading: loadingBounties } = useQuery(GET_BOUNTIES);
+    const { data: submissionsData, loading: loadingSubmissions } = useQuery(GET_SUBMISSIONS_BY_BOUNTY);
     const client = useApolloClient();
     const navigate = useNavigate();
 
@@ -29,8 +30,9 @@ const Home = () => {
                 )}
 
                 <h2>Recent Submissions</h2>
-                {/* You can also map recent submissions across bounties here */}
-                {/* <SubmissionGallery submissions={...} /> */}
+                {!loadingSubmissions && submissionsData && (
+                    <SubmissionGallery submissions={submissionsData.getSubmissions} />
+                )}
             </Element>
             <Footer />
         </>

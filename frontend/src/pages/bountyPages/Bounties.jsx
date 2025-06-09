@@ -1,4 +1,4 @@
-import { useQuery, useMutation, gql } from '@apollo/client';
+import { useQuery, useMutation } from '@apollo/client';
 import { Link, useNavigate } from 'react-router-dom';
 import { GET_USER_BOUNTIES } from '../../graphql/queries';
 import { DELETE_BOUNTY } from '../../graphql/mutations';
@@ -43,6 +43,7 @@ const Bounties = () => {
           <li key={bounty.id}>
             {bounty.character.name} {bounty.description} - {new Date(bounty.deadline).toDateString()}
             {bounty.aiAllowed && <span> (AI Allowed)</span>}
+            <button onClick={() => navigate(`/user_bounties/${bounty.id}`)}>Details</button>
             <button onClick={() => navigate(`/update_bounties/${bounty.id}`)}>Update</button>
             <button onClick={() => handleDelete(bounty.id)}>Delete</button>
           </li>

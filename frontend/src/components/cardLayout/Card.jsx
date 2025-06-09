@@ -1,5 +1,5 @@
 import React from 'react';
-import './Card.css'; 
+import './Card.css';
 
 const BountyCard = ({ character, client, description, deadline, imageUrl, aiAllowed }) => {
   return (

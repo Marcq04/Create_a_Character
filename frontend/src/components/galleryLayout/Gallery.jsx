@@ -6,7 +6,7 @@ import './Gallery.css';
 export const SubmissionGallery = ({ submissions }) => (
     <div className="submission-gallery">
         {submissions.map(submission => (
-            <Link key={submission._id} to={`/submissions/${submission._id}`}>
+            <Link key={submission._id} to={`/submissions/${submission.id}`}>
                 <SubmissionCard
                     title={submission.title}
                     description={submission.description}
@@ -21,7 +21,7 @@ export const SubmissionGallery = ({ submissions }) => (
 export const BountyGallery = ({ bounties }) => (
     <div className="bounty-gallery">
         {bounties.map(bounty => (
-            <Link key={bounty._id} to={`/bounties/${bounty._id}`}>
+            <Link key={bounty._id} to={`/bounties/${bounty.id}`}>
                 <BountyCard
                     character={bounty.character}
                     client={bounty.client}

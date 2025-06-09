@@ -45,18 +45,6 @@ export const GET_BOUNTY_BY_ID = gql`
   }
 `;
 
-export const GET_SUBMISSIONS = gql`
-  query GetSubmissionsByBounty($bountyId: ID!) {
-    getSubmissionsByBounty(bountyId: $bountyId) {
-      id
-      imageUrl
-      artist {
-        username
-      }
-    }
-  }
-`;
-
 export const GET_LEADERBOARD = gql`
   query GetLeaderboard($limit: Int!) {
     getLeaderboard(limit: $limit) {
@@ -232,6 +220,30 @@ export const GET_USER_BY_ID = gql`
       submissions {
         id
         imageUrl
+      }
+    }
+  }
+`;
+
+export const GET_SUBMISSIONS_BY_BOUNTY = gql`
+  query GetSubmissionsByBounty($bountyId: ID!) {
+    getSubmissionsByBounty(bountyId: $bountyId) {
+      id
+      imageUrl
+      artist {
+        username
+      }
+    }
+  }
+`;
+
+export const GET_ACCEPTED_SUBMISSIONS_BY_BOUNTY = gql`
+  query GetAcceptedSubmissionsByBounty($bountyId: ID!) {
+    getAcceptedSubmissionsByBounty(bountyId: $bountyId) {
+      id
+      imageUrl
+      artist {
+        username
       }
     }
   }

@@ -205,3 +205,27 @@ export const DELETE_BOUNTY = gql`
   }
 `;
 
+export const SUBMIT_ART = gql`
+  mutation SubmitArt($bountyId: ID!, $imageUrl: String!) {
+    submitArt(bountyId: $bountyId, imageUrl: $imageUrl) {
+      id
+      imageUrl
+      artist {
+        username
+      }
+      submittedAt
+    }
+  }
+`;
+
+export const CHOOSE_WINNER = gql`
+  mutation ChooseSubmissionWinner($bountyId: ID!, $submissionId: ID!) {
+    chooseSubmissionWinner(bountyId: $bountyId, submissionId: $submissionId) {
+      id
+      winner {
+        id
+        imageUrl
+      }
+    }
+  }
+`;
