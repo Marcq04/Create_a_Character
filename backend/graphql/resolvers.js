@@ -167,7 +167,16 @@ const resolvers = {
                 console.error(error);
                 throw new Error('Failed to fetch users');
             }
-        },                   
+        },
+        getAcceptedSubmissions: async () => {
+            try {
+                const submissions = await Submission.find({ isWinner: true }).populate('artist');
+                return submissions;
+            } catch (error) {
+                console.error(error);
+                throw new Error('Failed to fetch accepted submissions');
+            }
+        }                   
     },
     User: {
         characters: async (parent) => Character.find({ owner: parent._id }),

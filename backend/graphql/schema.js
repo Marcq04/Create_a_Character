@@ -96,6 +96,7 @@ const typeDefs = gql`
         getUserSubmissions: [Submission]
         getUserLikes: [Like]
         getUserComments: [Comment]
+        getAcceptedSubmissions: [Submission]
     }
 
     type Mutation {
