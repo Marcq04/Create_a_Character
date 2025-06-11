@@ -171,13 +171,24 @@ const resolvers = {
         },
         getSubmissionById: async (_, { id }) => {
             try {
-                const submission = await Submission.findById(id).populate('artist');
+                const submission = await Submission.findById(id)
+                    .populate('artist')
+                    .populate({
+                        path: 'bounty',
+                        populate: {
+                            path: 'character',
+                            select: 'name'
+                        }
+                    });
+
                 if (!submission) {
                     throw new Error('Submission not found');
                 }
-                if (!submission.bounty.character) {
-                    throw new Error('Bounty character not found');
+
+                if (!submission.bounty || !submission.bounty.character) {
+                    throw new Error('Bounty or character not found');
                 }
+
                 return submission;
             } catch (error) {
                 console.error(error);
