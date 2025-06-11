@@ -397,7 +397,7 @@ const resolvers = {
                     })
                     .populate('character client');
             } catch (err) {
-                console.error("❌ chooseSubmissionWinner error:", err.message);
+                console.error(" chooseSubmissionWinner error:", err.message);
                 throw new Error('Failed to choose winner');
             }
         },
