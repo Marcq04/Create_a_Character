@@ -254,3 +254,39 @@ export const GET_ACCEPTED_SUBMISSIONS = gql`
     }
   }
 `;
+
+export const GET_ACCEPTED_SUBMISSIONS_BY_USER = gql`
+  query GetAcceptedSubmissionsByUser($userId: ID!) {
+    getAcceptedSubmissionsByUser(userId: $userId) {
+      id
+      bounty {
+        id
+        description
+        character {
+          name
+        }
+      }
+      imageUrl
+      isWinner
+    }
+  }
+`;
+
+export const GET_SUBMISSION_BY_ID = gql`
+  query GetSubmissionById($id: ID!) {
+    getSubmissionById(id: $id) {
+      id
+      imageUrl
+      isWinner
+      artist {
+        username
+      }
+      bounty {
+        description
+        character {
+          name
+        }
+      }
+    }
+  }
+`;

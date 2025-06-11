@@ -16,6 +16,7 @@ import Community from './pages/Community';
 import UserProfile from './pages/profilePages/UserProfile';
 import Bounty_Details from './pages/bountyPages/Bounty_Details';
 import User_Bounty_Details from './pages/bountyPages/User_Bounty_Details';
+import AcceptedSubmission_Detail from './pages/submissionPages/AcceptedSubmission_Detail';
 import './App.css';
 
 function App() {
@@ -39,6 +40,7 @@ function App() {
         <Route path="/profile/:id" element={<UserProfile />} />
         <Route path="/bounties/:id" element={<Bounty_Details />} />
         <Route path="/user_bounties/:id" element={<User_Bounty_Details />} />
+        <Route path="/submissions/:id" element={<AcceptedSubmission_Detail />} />
       </Routes>
     </Router>
   );

@@ -33,13 +33,19 @@ const User_Bounty_Details = () => {
     const submissions = submissionData.getSubmissionsByBounty;
 
     const handleChooseWinner = async (submissionId) => {
+        if (bounty.isCompleted) {
+            alert("You have already chosen a winner for this bounty!");
+            return;
+        }
+        console.log('Choosing winner with:', { bountyId: id, submissionId });
         try {
             await chooseWinner({ variables: { bountyId: id, submissionId } });
             navigate("/bounties");
         } catch (error) {
-            console.error(error);
+            console.error('Frontend error:', error);
         }
     };
+
 
     return (
         <div>
@@ -71,9 +77,16 @@ const User_Bounty_Details = () => {
                             className="submission-image"
                         />
                         <p>Artist: {submission.artist.username}</p>
+                        <button
+                            onClick={() => handleChooseWinner(submission.id)}
+                            disabled={bounty.isCompleted}
+                        >
+                            {bounty.isCompleted ? "Already completed" : "Choose as Winner"}
+                        </button>
                     </li>
                 ))}
             </ul>
+            {bounty.isCompleted && <p>You have already chosen a winner for this bounty!</p>}
         </div>
     );
 };

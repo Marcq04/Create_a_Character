@@ -223,10 +223,16 @@ export const CHOOSE_WINNER = gql`
   mutation ChooseSubmissionWinner($bountyId: ID!, $submissionId: ID!) {
     chooseSubmissionWinner(bountyId: $bountyId, submissionId: $submissionId) {
       id
+      isCompleted
       winner {
         id
         imageUrl
+        artist {
+          username
+        }
       }
     }
   }
 `;
+
+
