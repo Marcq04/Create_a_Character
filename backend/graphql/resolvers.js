@@ -394,7 +394,7 @@ const resolvers = {
                     throw new Error('Submission not found');
                 }
 
-                if (submission.bounty.toString() !== bountyId) {
+                if (submission.bounty.equals(bountyId)) {
                     console.log(`❌ Submission bounty ID mismatch: expected ${bountyId}, got ${submission.bounty}`);
                     throw new Error('Submission does not match bounty');
                 }
