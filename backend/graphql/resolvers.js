@@ -168,7 +168,15 @@ const resolvers = {
                 console.error(error);
                 throw new Error('Failed to fetch accepted submissions');
             }
-        }
+        },
+        getSubmissionById: async (_, { id }) => {
+            try {
+                return await Submission.findById(id).populate('artist');
+            } catch (error) {
+                console.error(error);
+                throw new Error('Failed to fetch submission');
+            }
+        },
     },
 
     User: {
