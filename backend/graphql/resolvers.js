@@ -8,7 +8,6 @@ const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const { getTitleByHonor } = require('../utils/titleHelper');
 const { GraphQLScalarType, Kind } = require('graphql');
-const { get } = require('mongoose');
 
 // Middleware to check if the user is authenticated
 const authMiddleware = async (context) => {
@@ -48,7 +47,7 @@ const dataScaler = new GraphQLScalarType({
 
 const resolvers = {
     Date: dataScaler,
-    
+
     Query: {
         me: async (_, __, context) => {
             const user = await authMiddleware(context);
@@ -84,7 +83,6 @@ const resolvers = {
                 throw new Error('Failed to fetch bounties');
             }
         },
-        
         getBountyById: async (_, { id }) => {
             try {
                 return await Bounty.findById(id).populate('character client winner');
@@ -93,7 +91,6 @@ const resolvers = {
                 throw new Error('Failed to fetch bounty');
             }
         },
-        
         getSubmissionsByBounty: async (_, { bountyId }) => {
             try {
                 return await Submission.find({ bounty: bountyId }).populate('artist');
@@ -102,7 +99,6 @@ const resolvers = {
                 throw new Error('Failed to fetch submissions');
             }
         },
-        
         getUserById: async (_, { id }) => {
             const user = await User.findById(id).select('_id username honor title role created_at updated_at');
             if (!user) {
@@ -112,13 +108,13 @@ const resolvers = {
         },
         getLeaderboard: async (_, { limit = 10 }) => {
             try {
-              return await User.find()
-                .sort({ honor: -1 })
-                .limit(limit)
-                .select('_id username honor title role')
+                return await User.find()
+                    .sort({ honor: -1 })
+                    .limit(limit)
+                    .select('_id username honor title role');
             } catch (error) {
-              console.error('❌ Failed to fetch leaderboard:', error);
-              throw new Error('Failed to fetch leaderboard');
+                console.error('❌ Failed to fetch leaderboard:', error);
+                throw new Error('Failed to fetch leaderboard');
             }
         },
         getAcceptedSubmissionsByUser: async (_, { userId }) => {
@@ -134,7 +130,6 @@ const resolvers = {
             const user = await authMiddleware(context);
             return Character.find({ owner: user._id });
         },
-
         getUserBounties: async (_, __, context) => {
             const user = await authMiddleware(context);
             const bounties = await Bounty.find({ client: user._id })
@@ -144,17 +139,14 @@ const resolvers = {
 
             return bounties.filter(bounty => bounty.character && bounty.character.name);
         },
-
         getUserSubmissions: async (_, __, context) => {
             const user = await authMiddleware(context);
             return Submission.find({ artist: user._id });
         },
-
         getUserLikes: async (_, __, context) => {
             const user = await authMiddleware(context);
             return Like.find({ user: user._id }).populate('submission');
         },
-
         getUserComments: async (_, __, context) => {
             const user = await authMiddleware(context);
             return Comment.find({ user: user._id }).populate('submission');
@@ -176,12 +168,14 @@ const resolvers = {
                 console.error(error);
                 throw new Error('Failed to fetch accepted submissions');
             }
-        }                   
+        }
     },
+
     User: {
         characters: async (parent) => Character.find({ owner: parent._id }),
         submissions: async (parent) => Submission.find({ artist: parent._id, isWinner: true }),
-    }, 
+    },
+
     Mutation: {
         signupUser: async (_, { username, email, password }) => {
             try {
@@ -197,8 +191,8 @@ const resolvers = {
             } catch (error) {
                 console.error(error);
                 throw new Error('Failed to create user');
-            }   
-        },               
+            }
+        },
 
         loginUser: async (_, { email, password }) => {
             try {
@@ -213,14 +207,14 @@ const resolvers = {
                 const token = jwt.sign(
                     { userId: user._id },
                     process.env.JWT_SECRET,
-                    { expiresIn: '7d' } 
+                    { expiresIn: '7d' }
                 );
                 return { token, user };
             } catch (error) {
                 console.error(error);
                 throw new Error('Failed to login user');
             }
-        },               
+        },
 
         addCharacter: async (_, { name, nickname, age, gender, origin, background, goal, weakness, personality, powers, skills, appearance }, context) => {
             try {
@@ -237,7 +231,7 @@ const resolvers = {
         updateCharacter: async (_, { id, ...updates }, context) => {
             try {
                 const user = await authMiddleware(context);
-        
+
                 const character = await Character.findById(id);
                 if (!character) {
                     throw new Error('Character not found');
@@ -245,23 +239,23 @@ const resolvers = {
                 if (character.owner.toString() !== user._id.toString()) {
                     throw new Error('Unauthorized');
                 }
-        
+
                 // Update only the fields that are actually provided
                 Object.keys(updates).forEach(key => {
                     if (Object.prototype.hasOwnProperty.call(updates, key)) {
                         character[key] = updates[key];
                     }
                 });
-        
+
                 character.updated_at = new Date(); // Update the timestamp
-        
+
                 await character.save();
                 return character;
             } catch (error) {
                 console.error(error);
                 throw new Error('Failed to update character');
             }
-        },        
+        },
 
         deleteCharacter: async (_, { id }, context) => {
             try {
@@ -320,7 +314,6 @@ const resolvers = {
                 await Submission.deleteMany({ bounty: bountyToDelete._id });
             }
 
-            
             const bounty = new Bounty({
                 character,
                 client: user._id,
@@ -333,16 +326,16 @@ const resolvers = {
             await bounty.save();
             return await Bounty.findById(bounty._id).populate('character client winner');
         },
-        
+
         submitArt: async (_, { bountyId, imageUrl, publicId }, context) => {
             try {
                 const user = await authMiddleware(context);
-        
+
                 const bounty = await Bounty.findById(bountyId);
                 if (!bounty || bounty.isCompleted) {
                     throw new Error('Bounty not found or already completed');
                 }
-        
+
                 const submission = new Submission({
                     bounty: bountyId,
                     artist: user._id,
@@ -366,42 +359,19 @@ const resolvers = {
                 throw new Error('Failed to submit art');
             }
         },
-        
+
         chooseSubmissionWinner: async (_, { bountyId, submissionId }, context) => {
             try {
                 const user = await authMiddleware(context);
-                console.log('Authenticated user ID:', user._id);
 
                 const bounty = await Bounty.findById(bountyId);
-                if (!bounty) {
-                    console.error("Bounty not found");
-                    throw new Error('Bounty not found');
-                }
-
-                console.log("Found bounty:", bounty);
-
-                if (bounty.isCompleted) {
-                    console.error("Bounty already completed");
-                    throw new Error('Bounty is already completed');
-                }
-
-                if (bounty.client.toString() !== user._id.toString()) {
-                    console.error("Unauthorized: bounty.client:", bounty.client, "user._id:", user._id);
-                    throw new Error('Unauthorized');
-                }
+                if (!bounty) throw new Error('Bounty not found');
+                if (bounty.isCompleted) throw new Error('Bounty is already completed');
+                if (bounty.client.toString() !== user._id.toString()) throw new Error('Unauthorized');
 
                 const submission = await Submission.findById(submissionId);
-                if (!submission) {
-                    console.error("Submission not found");
-                    throw new Error('Submission not found');
-                }
-
-                console.log("Submission bounty:", submission.bounty, "Target bountyId:", bountyId);
-
-                if (!submission.bounty.equals(bountyId)) {
-                    console.error("Submission does not match bounty");
-                    throw new Error('Submission does not match bounty');
-                }
+                if (!submission) throw new Error('Submission not found');
+                if (!submission.bounty.equals(bountyId)) throw new Error('Submission does not match bounty');
 
                 submission.isWinner = true;
                 await submission.save();
@@ -435,19 +405,19 @@ const resolvers = {
         updateBounty: async (_, { bountyId, description, deadline, aiAllowed }, context) => {
             try {
                 const user = await authMiddleware(context);
-        
+
                 const bounty = await Bounty.findById(bountyId);
                 if (!bounty) throw new Error('Bounty not found');
-        
+
                 if (bounty.client.toString() !== user._id.toString()) {
                     throw new Error('Unauthorized');
                 }
-        
+
                 bounty.description = description;
                 bounty.deadline = deadline;
                 bounty.aiAllowed = aiAllowed;
                 await bounty.save();
-        
+
                 return await Bounty.findById(bounty._id).populate('character client winner');
             } catch (err) {
                 console.error(err);
@@ -484,64 +454,64 @@ const resolvers = {
                 throw new Error('Failed to delete bounty');
             }
         },
-        
+
         likeSubmission: async (_, { submissionId }, context) => {
             const user = await authMiddleware(context);
-        
+
             const alreadyLiked = await Like.findOne({
                 user: user._id,
                 submission: submissionId
-            }).populate('user');            
-        
+            }).populate('user');
+
             if (alreadyLiked) {
                 return alreadyLiked;
             }
-        
+
             const like = new Like({
                 user: user._id,
                 submission: submissionId
             });
-        
+
             await like.save();
             return await Like.findById(like._id).populate('user');
         },
-        
+
         unlikeSubmission: async (_, { submissionId }, context) => {
             const user = await authMiddleware(context);
-        
+
             const result = await Like.findOneAndDelete({
                 user: user._id,
                 targetType: 'Submission',
                 targetId: submissionId
-            }).populate('user');            
-        
-            return !! result;
-        },        
-        
+            }).populate('user');
+
+            return !!result;
+        },
+
         addComment: async (_, { submissionId, content }, context) => {
             const user = await authMiddleware(context);
-        
+
             const comment = new Comment({
                 user: user._id,
                 submission: submissionId,
                 content
-            });            
-        
+            });
+
             await comment.save();
             return await Comment.findById(comment._id).populate('user');
-        },        
+        },
 
         deleteComment: async (_, { commentId }, context) => {
             try {
                 const user = await authMiddleware(context);
-        
+
                 const comment = await Comment.findById(commentId);
                 if (!comment) throw new Error('Comment not found');
-        
+
                 if (comment.user.toString() !== user._id.toString()) {
                     throw new Error('Unauthorized');
                 }
-        
+
                 await Comment.findByIdAndDelete(commentId);
                 return true;
             } catch (err) {
