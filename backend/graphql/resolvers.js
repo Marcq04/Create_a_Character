@@ -371,39 +371,49 @@ const resolvers = {
             try {
                 const user = await authMiddleware(context);
                 const { getTitleByHonor } = require('../utils/getTitleByHonor');
-        
+
                 const bounty = await Bounty.findById(bountyId);
-                if (!bounty) throw new Error('Bounty not found');
-        
-                // Check if bounty is already completed
+                if (!bounty) {
+                    console.log('❌ Bounty not found');
+                    throw new Error('Bounty not found');
+                }
+
                 if (bounty.isCompleted) {
+                    console.log('❌ Bounty already completed');
                     throw new Error('Bounty is already completed');
                 }
-        
+
                 if (bounty.client.toString() !== user._id.toString()) {
+                    console.log('❌ Unauthorized: client does not match');
                     throw new Error('Unauthorized');
                 }
-        
+
                 const submission = await Submission.findById(submissionId);
-                if (!submission || submission.bounty.toString() !== bountyId) {
-                    throw new Error('Submission not found or does not match bounty');
+                if (!submission) {
+                    console.log('❌ Submission not found');
+                    throw new Error('Submission not found');
                 }
-        
+
+                if (submission.bounty.toString() !== bountyId) {
+                    console.log(`❌ Submission bounty ID mismatch: expected ${bountyId}, got ${submission.bounty}`);
+                    throw new Error('Submission does not match bounty');
+                }
+
+                // All checks passed
                 submission.isWinner = true;
                 await submission.save();
-        
+
                 bounty.winner = submission._id;
                 bounty.isCompleted = true;
                 await bounty.save();
-        
-                // Add honor point to the winning artist
+
                 const artist = await User.findById(submission.artist);
                 if (artist) {
                     artist.honor += 1;
                     artist.title = getTitleByHonor(artist.honor);
                     await artist.save();
                 }
-        
+
                 return await Bounty.findById(bounty._id)
                     .populate({
                         path: 'winner',
@@ -412,9 +422,10 @@ const resolvers = {
                             select: '_id username'
                         }
                     })
-                    .populate('character client'); // Optional extras
+                    .populate('character client');
+
             } catch (err) {
-                console.error(err);
+                console.error('❌ Error in chooseSubmissionWinner:', err);
                 throw new Error('Failed to choose winner');
             }
         },
