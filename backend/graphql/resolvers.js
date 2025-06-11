@@ -370,36 +370,39 @@ const resolvers = {
         chooseSubmissionWinner: async (_, { bountyId, submissionId }, context) => {
             try {
                 const user = await authMiddleware(context);
-                const { getTitleByHonor } = require('../utils/getTitleByHonor');
+                console.log('Authenticated user ID:', user._id);
 
                 const bounty = await Bounty.findById(bountyId);
                 if (!bounty) {
-                    console.log('❌ Bounty not found');
+                    console.error("Bounty not found");
                     throw new Error('Bounty not found');
                 }
 
+                console.log("Found bounty:", bounty);
+
                 if (bounty.isCompleted) {
-                    console.log('❌ Bounty already completed');
+                    console.error("Bounty already completed");
                     throw new Error('Bounty is already completed');
                 }
 
                 if (bounty.client.toString() !== user._id.toString()) {
-                    console.log('❌ Unauthorized: client does not match');
+                    console.error("Unauthorized: bounty.client:", bounty.client, "user._id:", user._id);
                     throw new Error('Unauthorized');
                 }
 
                 const submission = await Submission.findById(submissionId);
                 if (!submission) {
-                    console.log('❌ Submission not found');
+                    console.error("Submission not found");
                     throw new Error('Submission not found');
                 }
 
-                if (!submission || submission.bounty.equals(bountyId)) {
-                    console.log(`❌ Submission bounty ID mismatch: expected ${bountyId}, got ${submission.bounty}`);
+                console.log("Submission bounty:", submission.bounty, "Target bountyId:", bountyId);
+
+                if (!submission.bounty.equals(bountyId)) {
+                    console.error("Submission does not match bounty");
                     throw new Error('Submission does not match bounty');
                 }
 
-                // All checks passed
                 submission.isWinner = true;
                 await submission.save();
 
@@ -423,9 +426,8 @@ const resolvers = {
                         }
                     })
                     .populate('character client');
-
             } catch (err) {
-                console.error('❌ Error in chooseSubmissionWinner:', err);
+                console.error("❌ chooseSubmissionWinner error:", err.message);
                 throw new Error('Failed to choose winner');
             }
         },
