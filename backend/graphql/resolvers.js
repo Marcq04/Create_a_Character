@@ -362,6 +362,11 @@ const resolvers = {
                     throw new Error('Bounty not found or already completed');
                 }
 
+                const now = new Date();
+                if (bounty.deadline < now) {
+                    throw new Error('The deadline for this bounty has passed.');
+                }
+
                 const submission = new Submission({
                     bounty: bountyId,
                     artist: user._id,
@@ -371,15 +376,7 @@ const resolvers = {
                 });
 
                 await submission.save();
-                return await Submission.findById(submission._id)
-                    .populate({
-                        path: 'bounty',
-                        select: '_id description',
-                    })
-                    .populate({
-                        path: 'artist',
-                        select: '_id username',
-                    });
+                return await submission.populate('artist').populate('bounty');
             } catch (err) {
                 console.error(err);
                 throw new Error('Failed to submit art');
