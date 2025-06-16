@@ -1,9 +1,9 @@
 import React from 'react';
 import './Card.css';
 
-const BountyCard = ({ character, client, description, deadline, imageUrl, aiAllowed }) => {
+const BountyCard = ({ character, client, description, deadline, imageUrl, aiAllowed, isCompleted }) => {
   return (
-    <div className="card">
+    <div className={`card ${isCompleted ? 'completed' : ''}`}>
       {imageUrl && <img src={imageUrl} alt={character?.name || 'Character Image'} className="card-image" />}
       <div className="card-content">
         <h2 className="card-character">{character?.name || 'Unknown Character'}</h2>
@@ -11,6 +11,7 @@ const BountyCard = ({ character, client, description, deadline, imageUrl, aiAllo
         <p className="card-description">{description}</p>
         <p className="card-deadline">Deadline: {new Date(deadline).toLocaleDateString()}</p>
         {aiAllowed && <p className="card-ai-allowed">AI Allowed</p>}
+        {isCompleted && <p className='card-status'>Winner Chosen</p>}
       </div>
     </div>
   );

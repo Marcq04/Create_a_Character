@@ -7,6 +7,7 @@ export const GET_BOUNTIES = gql`
       description
       deadline
       aiAllowed
+      isCompleted
       character {
         name
       }

@@ -27,8 +27,8 @@ export const BountyGallery = ({ bounties = [] }) => (
                     client={bounty.client}
                     description={bounty.description}
                     deadline={bounty.deadline}
-                    imageUrl={bounty.imageUrl}
                     aiAllowed={bounty.aiAllowed}
+                    isCompleted={bounty.isCompleted && <p className='card-status'>Winner Chosen</p>}
                 />
             </Link>
         ))}

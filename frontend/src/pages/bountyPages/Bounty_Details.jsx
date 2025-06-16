@@ -62,6 +62,7 @@ const Bounty_Details = () => {
     if (error) return <p>Error: {error.message}</p>;
 
     const bounty = data.getBountyById;
+    const isPastDeadline = new Date() > new Date(bounty.deadline);
 
     return (
         <div>
@@ -89,15 +90,17 @@ const Bounty_Details = () => {
                 handleSubmitArt();
             }}>
                 <p style={{color: 'red'}}>Please watermark your artwork before submitting!</p>
+                {isPastDeadline && <p style={{color: 'red'}}>The deadline for this bounty has passed.</p>}
                 <input
                     type="text"
                     placeholder="Artwork Image URL"
                     value={imageUrl}
                     onChange={(e) => setImageUrl(e.target.value)}
                     required
+                    disabled={isPastDeadline}
                 />
-                <button type="submit">Submit</button>
-                <button type="button" onClick={openUploadWidget}>Upload Image</button>
+                <button type="submit" disabled={isPastDeadline}>Submit</button>
+                <button type="button" onClick={openUploadWidget} disabled={isPastDeadline}>Upload Image</button>
             </form>
             {imageUrl && <img src={imageUrl} alt="Preview" style={{ maxWidth: '300px', marginTop: '10px' }} />}
         </div>

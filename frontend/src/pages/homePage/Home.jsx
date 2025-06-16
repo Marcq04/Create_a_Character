@@ -42,7 +42,7 @@ const Home = () => {
                     <BountyGallery bounties={bountiesData.getBounties} />
                 )}
 
-                <h2>Recent Submissions</h2>
+                <h2>Recent Winner Submissions</h2>
                 {!loadingSubmissions && submissionsData && (
                     <SubmissionGallery submissions={submissionsData.getAcceptedSubmissions} />
                 )}
