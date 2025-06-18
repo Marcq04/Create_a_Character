@@ -73,6 +73,13 @@ const typeDefs = gql`
         createdAt: Date!
     }
 
+    type Image {
+        id: ID!
+        owner: ID!
+        publicId: String!
+        imageUrl: String!
+    }
+
     type AuthPayload {
         token: String!
         user: User!
@@ -99,6 +106,7 @@ const typeDefs = gql`
         getUserComments: [Comment]
         getAcceptedSubmissions: [Submission]
         getSubmissionById(id: ID!): Submission
+        getUserImages: [Image]
     }
 
     type Mutation {
@@ -167,6 +175,8 @@ const typeDefs = gql`
         unlikeSubmission(submissionId: ID!): Boolean
         addComment(submissionId: ID!, content: String!): Comment
         deleteComment(commentId: ID!): Boolean
+
+        uploadImage(file: Upload!): Image
     }
 `;
 

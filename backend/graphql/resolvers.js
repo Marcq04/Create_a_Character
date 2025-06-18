@@ -541,6 +541,28 @@ const resolvers = {
                 console.error(err);
                 throw new Error('Failed to delete comment');
             }
+        },
+
+        uploadImage: async (_, { image }, context) => {
+            try {
+                const user = await authMiddleware(context);
+
+                const { createReadStream, filename, mimetype } = await image;
+                const stream = createReadStream();
+
+                const uploadResult = await uploadStream(stream, filename, mimetype);
+                const image = new Image({
+                    owner: user._id,
+                    publicId: uploadResult.public_id,
+                    imageUrl: uploadResult.secure_url
+                });
+
+                await image.save();
+                return await Image.findById(image._id).populate('owner');
+            } catch (err) {
+                console.error(err);
+                throw new Error('Failed to upload image');
+            }
         }
     }
 };
