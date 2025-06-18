@@ -14,6 +14,7 @@ const typeDefs = gql`
         updated_at: Date!
         characters: [Character]
         submissions: [Submission]
+        images: [Image]
     }
 
     type Character {
@@ -61,23 +62,25 @@ const typeDefs = gql`
     type Like {
         id: ID!
         user: User!
-        submission: Submission!
+        image: Image!
         createdAt: Date!
     }
 
     type Comment {
         id: ID!
         user: User!
-        submission: Submission!
+        image: Image!
         content: String!
         createdAt: Date!
     }
 
     type Image {
         id: ID!
-        owner: ID!
-        publicId: String!
         imageUrl: String!
+        publicId: String
+        isProfilePic: Boolean
+        isBanner: Boolean
+        uploadedAt: Date!
     }
 
     type AuthPayload {
@@ -106,7 +109,7 @@ const typeDefs = gql`
         getUserComments: [Comment]
         getAcceptedSubmissions: [Submission]
         getSubmissionById(id: ID!): Submission
-        getUserImages: [Image]
+        getUserImages(userId: ID): [Image]
     }
 
     type Mutation {
@@ -171,15 +174,19 @@ const typeDefs = gql`
 
         deleteBounty(bountyId: ID!): Boolean
 
-        likeSubmission(submissionId: ID!): Like
-        unlikeSubmission(submissionId: ID!): Boolean
-        addComment(submissionId: ID!, content: String!): Comment
-        deleteComment(commentId: ID!): Boolean
+        likeSubmission(imageId: ID!): Like
+        unlikeSubmission(imageId: ID!): Boolean
+        addComment(imageId: ID!, content: String!): Comment
+        deleteComment(imageId: ID!): Boolean
 
         uploadImage(
-            imageUrl: String!,
-            publicId: String
+            imageUrl: String!, 
+            publicId: String!, 
+            isProfilePic: Boolean, 
+            isBanner: Boolean
         ): Image
+
+        deleteImage(imageId: ID!): Boolean
     }
 `;
 

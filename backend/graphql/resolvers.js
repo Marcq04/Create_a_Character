@@ -478,12 +478,12 @@ const resolvers = {
             }
         },
 
-        likeSubmission: async (_, { submissionId }, context) => {
+        likeImage: async (_, { imageId }, context) => {
             const user = await authMiddleware(context);
 
             const alreadyLiked = await Like.findOne({
                 user: user._id,
-                submission: submissionId
+                image: imageId
             }).populate('user');
 
             if (alreadyLiked) {
@@ -492,36 +492,35 @@ const resolvers = {
 
             const like = new Like({
                 user: user._id,
-                submission: submissionId
+                image: imageId
             });
 
             await like.save();
-            return await Like.findById(like._id).populate('user');
+            return await Like.findById(like._id).populate('user').populate('image');
         },
 
-        unlikeSubmission: async (_, { submissionId }, context) => {
+        unlikeImage: async (_, { imageId }, context) => {
             const user = await authMiddleware(context);
 
             const result = await Like.findOneAndDelete({
                 user: user._id,
-                targetType: 'Submission',
-                targetId: submissionId
-            }).populate('user');
+                image: imageId
+            }).populate('user').populate('image');
 
             return !!result;
         },
 
-        addComment: async (_, { submissionId, content }, context) => {
+        addComment: async (_, { imageId, content }, context) => {
             const user = await authMiddleware(context);
 
             const comment = new Comment({
                 user: user._id,
-                submission: submissionId,
+                image: imageId,
                 content
             });
 
             await comment.save();
-            return await Comment.findById(comment._id).populate('user');
+            return await Comment.findById(comment._id).populate('user').populate('image');
         },
 
         deleteComment: async (_, { commentId }, context) => {
