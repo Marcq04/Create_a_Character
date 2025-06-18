@@ -174,8 +174,8 @@ const typeDefs = gql`
 
         deleteBounty(bountyId: ID!): Boolean
 
-        likeSubmission(imageId: ID!): Like
-        unlikeSubmission(imageId: ID!): Boolean
+        likeImage(imageId: ID!): Like
+        unLikeImage(imageId: ID!): Boolean
         addComment(imageId: ID!, content: String!): Comment
         deleteComment(imageId: ID!): Boolean
 
