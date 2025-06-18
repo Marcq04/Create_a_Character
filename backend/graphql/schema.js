@@ -100,8 +100,8 @@ const typeDefs = gql`
         getLeaderboard(limit: Int): [User]
         getUserById(id: ID!): User
         getAcceptedSubmissionsByUser(userId: ID!): [Submission]
-        getLikes(submissionId: ID!): [Like]
-        getComments(submissionId: ID!): [Comment]
+        getLikes(imageId: ID!): [Like]
+        getComments(imageId: ID!): [Comment]
         getUserCharacters: [Character]
         getUserBounties: [Bounty]
         getUserSubmissions: [Submission]
