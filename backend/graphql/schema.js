@@ -176,7 +176,10 @@ const typeDefs = gql`
         addComment(submissionId: ID!, content: String!): Comment
         deleteComment(commentId: ID!): Boolean
 
-        uploadImage(file: Upload!): Image
+        uploadImage(
+            imageUrl: String!,
+            publicId: String
+        ): Image
     }
 `;
 
