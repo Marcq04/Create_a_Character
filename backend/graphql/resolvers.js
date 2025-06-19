@@ -379,7 +379,7 @@ const resolvers = {
                 return await submission.populate('artist').populate('bounty');
             } catch (err) {
                 console.error(err);
-                throw new Error('Failed to submit art');
+                throw new Error(err.message);
             }
         },
 
