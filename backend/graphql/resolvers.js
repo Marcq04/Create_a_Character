@@ -373,13 +373,13 @@ const resolvers = {
                     imageUrl,
                     publicId,
                     isWinner: false
-                });
+                }).save();
 
                 await submission.save();
-                return await submission.populate('artist').populate('bounty');
+                return await submission.findById(submission._id).populate('artist').populate('bounty');
             } catch (err) {
                 console.error(err);
-                throw new Error(err.message);
+                throw new Error(err.message || 'Failed to submit art');
             }
         },
 
