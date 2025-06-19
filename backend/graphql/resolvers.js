@@ -373,7 +373,7 @@ const resolvers = {
                     imageUrl,
                     publicId,
                     isWinner: false
-                }).save();
+                });
 
                 await submission.save();
                 return await submission.findById(submission._id).populate('artist').populate('bounty');
