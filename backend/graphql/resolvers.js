@@ -372,11 +372,15 @@ const resolvers = {
                     artist: user._id,
                     imageUrl,
                     publicId,
-                    isWinner: false
+                    isWinner: false,
                 });
 
                 await submission.save();
-                return await submission.findById(submission._id).populate('artist').populate('bounty');
+
+                return await Submission.findById(submission._id)
+                    .populate('artist')
+                    .populate('bounty');
+
             } catch (err) {
                 console.error(err);
                 throw new Error(err.message || 'Failed to submit art');
