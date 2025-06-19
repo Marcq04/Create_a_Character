@@ -46,11 +46,12 @@ const Bounty_Details = () => {
 
     const handleSubmitArt = () => {
         if (imageUrl) {
+            console.log('Submitting art:', { bountyId: id, imageUrl, publicId });
             submitArt({
                 variables: {
                     bountyId: id,
                     imageUrl,
-                    publicId,
+                    publicId: publicId || null,
                 },
             });
         } else {

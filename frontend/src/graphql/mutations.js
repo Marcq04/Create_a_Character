@@ -206,7 +206,7 @@ export const DELETE_BOUNTY = gql`
 `;
 
 export const SUBMIT_ART = gql`
-  mutation SubmitArt($bountyId: ID!, $imageUrl: String!, $publicId: String!) {
+  mutation SubmitArt($bountyId: ID!, $imageUrl: String!, $publicId: String) {
     submitArt(bountyId: $bountyId, imageUrl: $imageUrl, publicId: $publicId) {
       id
       imageUrl
@@ -235,4 +235,12 @@ export const CHOOSE_WINNER = gql`
   }
 `;
 
-
+export const UPLOAD_IMAGE = gql`
+  mutation UploadImage($image: Upload!) {
+    uploadImage(image: $image) {
+      id
+      publicId
+      imageUrl
+    }
+  }
+`;

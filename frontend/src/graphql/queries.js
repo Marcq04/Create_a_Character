@@ -291,3 +291,12 @@ export const GET_SUBMISSION_BY_ID = gql`
     }
   }
 `;
+
+export const GET_USER_IMAGES = gql`
+  query GetUserImages {
+    getUserImages {
+      id
+      imageUrl
+    }
+  }
+`;
