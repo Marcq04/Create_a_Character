@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useQuery, useMutation } from '@apollo/client';
 import { ME } from '../../graphql/queries';
@@ -8,12 +8,6 @@ import './Profile.css';
 const Profile = () => {
   const { data, loading, error } = useQuery(ME);
   const navigate = useNavigate();
-
-  if (loading) return <p>Loading...</p>;
-  if (error) return <p>Error: {error.message}</p>;
-
-  const { me: user } = data;
-
   const [imageUrl, setImageUrl] = useState('');
   const [publicId, setPublicId] = useState('');
   const [uploadImage] = useMutation(UPLOAD_IMAGE, {
@@ -22,6 +16,11 @@ const Profile = () => {
     },
     onError: (error) => alert(`Error: ${error.message}`),
   });
+
+  if (loading) return <p>Loading...</p>;
+  if (error) return <p>Error: {error.message}</p>;
+
+  const { me: user } = data;
 
   const openUploadWidget = () => {
     const widget = window.cloudinary.createUploadWidget({
@@ -72,6 +71,16 @@ const Profile = () => {
           <p>No characters found.</p>
         )}
       </ul>
+
+      <div className="profile-image-upload">
+        <button onClick={openUploadWidget}>Upload Profile Image</button>
+        {imageUrl && (
+          <div>
+            <img src={imageUrl} alt="Profile Preview" style={{ maxWidth: '200px', margin: '10px 0' }} />
+            <button onClick={handleImageUpload}>Save Profile Image</button>
+          </div>
+        )}
+      </div>
 
       <button onClick={() => navigate('/home')}>Go Back to Home</button>
     </div>
