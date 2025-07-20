@@ -236,11 +236,12 @@ export const CHOOSE_WINNER = gql`
 `;
 
 export const UPLOAD_IMAGE = gql`
-  mutation UploadImage($image: Upload!) {
-    uploadImage(image: $image) {
+  mutation UploadImage($imageUrl: String!, $publicId: String!, $isProfilePic: Boolean, $isBanner: Boolean) {
+    uploadImage(imageUrl: $imageUrl, publicId: $publicId, isProfilePic: $isProfilePic, isBanner: $isBanner) {
       id
-      publicId
       imageUrl
+      publicId
+      uploadedAt
     }
   }
 `;

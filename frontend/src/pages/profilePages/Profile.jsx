@@ -25,7 +25,7 @@ const Profile = () => {
   const openUploadWidget = () => {
     const widget = window.cloudinary.createUploadWidget({
       cloudName: 'dpbsmirhv',
-      uploadPreset: 'create-a-character',
+      uploadPreset: 'upload-image',
       folder: 'profileImages',
       sources: ['local', 'url'],
       showAdvancedOptions: false,
