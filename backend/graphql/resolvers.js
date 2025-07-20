@@ -546,22 +546,20 @@ const resolvers = {
             }
         },
 
-        uploadImage: async (_, { image }, context) => {
+        uploadImage: async (_, { imageUrl, publicId, isProfilePic, isBanner }, context) => {
             try {
                 const user = await authMiddleware(context);
-
-                const { createReadStream, filename, mimetype } = await image;
-                const stream = createReadStream();
-
-                const uploadResult = await uploadStream(stream, filename, mimetype);
+                
                 const image = new Image({
                     owner: user._id,
-                    publicId: uploadResult.public_id,
-                    imageUrl: uploadResult.secure_url
+                    imageUrl,
+                    publicId, 
+                    isProfilePic: isProfilePic || false,
+                    isBanner: isBanner || false,
                 });
 
                 await image.save();
-                return await Image.findById(image._id).populate('owner');
+                return image;
             } catch (err) {
                 console.error(err);
                 throw new Error('Failed to upload image');
