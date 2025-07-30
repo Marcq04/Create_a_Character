@@ -245,3 +245,59 @@ export const UPLOAD_IMAGE = gql`
     }
   }
 `;
+
+export const LIKE_IMAGE = gql`
+  mutation LikeImage($imageId: ID!) {
+    likeImage(imageId: $imageId) {
+      id
+      likesCount
+      likedByUser
+    }
+  }
+`;
+
+export const UNLIKE_IMAGE = gql`
+  mutation UnlikeImage($imageId: ID!) {
+    unlikeImage(imageId: $imageId) {
+      id
+      likesCount
+      likedByUser
+    }
+  }
+`;
+
+export const ADD_COMMENT = gql`
+  mutation AddComment($imageId: ID!, $text: String!) {
+    addComment(imageId: $imageId, text: $text) {
+      id
+      comments {
+        id
+        text
+        author {
+          id
+          username
+        }
+        createdAt
+      }
+    }
+  }
+`;
+
+export const DELETE_COMMENT = gql`
+  mutation DeleteComment($commentId: ID!) {
+    deleteComment(commentId: $commentId) {
+      id
+      comments {
+        id
+        text
+        author {
+          id
+          username
+        }
+        createdAt
+      }
+    }
+  }
+`;
+
+

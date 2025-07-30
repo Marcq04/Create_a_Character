@@ -141,13 +141,11 @@ export const GET_USER_LIKES = gql`
   query GetUserLikes {
     getUserLikes {
       id
-      submission {
+      image {
         id
         imageUrl
-        artist {
-          username
-        }
       }
+      createdAt
     }
   }
 `;
@@ -156,13 +154,12 @@ export const GET_USER_COMMENTS = gql`
   query GetUserComments {
     getUserComments {
       id
-      submission {
+      image {
         id
         imageUrl
-        artist {
-          username
-        }
       }
+      content
+      createdAt
     }
   }
 `;
@@ -300,3 +297,4 @@ export const GET_USER_IMAGES = gql`
     }
   }
 `;
+
